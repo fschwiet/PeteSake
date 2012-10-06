@@ -14,7 +14,7 @@ namespace PeteSake
     {
         public GetTestData()
         {
-            this.IsCommand("get-test", "Downloads SQL results and writes them to json");
+            this.IsCommand("save-test-json", "Downloads SQL results and writes them to json.");
             this.HasRequiredOption("p=", "Base filename used to store query results.", v => BaseFilepath = v);
             this.HasRequiredOption("c=", "Connection string with default database set.", v => SqlConnectionString = v);
             this.HasRequiredOption("q=", "Query to execute (filepath or actual query text).", v => Query = v);
@@ -30,6 +30,8 @@ namespace PeteSake
 
             if (queryAsLocalFile != null)
                 Query = File.ReadAllText(Query);
+
+            BaseFilepath = Path.GetFullPath(BaseFilepath);
 
             using(var connection = new SqlConnection(SqlConnectionString))
             {
