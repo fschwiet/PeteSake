@@ -1,0 +1,3 @@
+﻿example usage:
+
+.\PeteSake\bin\Debug\PeteSake.exe -p .\output -c "Data Source=.\SQLEXPRESS;Initial Catalog=Database;User ID=username;Password=password;" -q "SELECT * FROM Table FOR XML RAW"
