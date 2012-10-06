@@ -37,7 +37,7 @@ namespace PeteSake
         {
             try
             {
-                Query = File.ReadAllText(new Uri(Query).LocalPath);
+                Query = File.ReadAllText(Path.GetFullPath(Query));
             }
             catch (Exception)
             {
