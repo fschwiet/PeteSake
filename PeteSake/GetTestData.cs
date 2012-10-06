@@ -24,14 +24,21 @@ namespace PeteSake
         public string SqlConnectionString;
         public string Query;
 
+        public override int? OverrideAfterHandlingArgumentsBeforeRun(string[] remainingArguments)
+        {
+            BaseFilepath = Path.GetFullPath(BaseFilepath);
+            return null;
+        }
+
         public override int Run(string[] remainingArguments)
         {
-            var queryAsLocalFile = new Uri(Query).LocalPath;
-
-            if (queryAsLocalFile != null)
-                Query = File.ReadAllText(Query);
-
-            BaseFilepath = Path.GetFullPath(BaseFilepath);
+            try
+            {
+                Query = File.ReadAllText(new Uri(Query).LocalPath);
+            }
+            catch (Exception)
+            {
+            }
 
             using(var connection = new SqlConnection(SqlConnectionString))
             {
