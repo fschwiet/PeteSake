@@ -50,9 +50,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="GenerateRowDTOCommand.cs" />
     <Compile Include="GetTestData.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SqlSchema\SchemaReader.cs" />
+    <Compile Include="SqlSchema\Table.cs" />
+    <Compile Include="SqlSchema\TableType.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
