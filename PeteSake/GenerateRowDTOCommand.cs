@@ -44,7 +44,7 @@ namespace PeteSake
             return base.OverrideAfterHandlingArgumentsBeforeRun(remainingArguments);
         }
 
-        Dictionary<string, SqlTypeInfo> typeMapping = GetTypeMapping(); 
+        Dictionary<string, SqlTypeInfo> typeMapping = SqlTypeInfo.GetTypeMapping(); 
 
         public override int Run(string[] remainingArguments)
         {
@@ -83,37 +83,6 @@ namespace PeteSake
             }
 
             return 0;
-        }
-
-        private static Dictionary<string, SqlTypeInfo> GetTypeMapping()
-        {
-            var dateTimeTypeInfo = new SqlTypeInfo(typeof (DateTime), typeof (DateTime?));
-            var intTypeInfo = new SqlTypeInfo(typeof (int), typeof (int?));
-
-            return new Dictionary<string, SqlTypeInfo>()
-            {
-                {"int", intTypeInfo},
-                {"varchar", new SqlTypeInfo(typeof (string))},
-                {"nvarchar", new SqlTypeInfo(typeof (string))},
-                {"text", new SqlTypeInfo(typeof (string))},
-                {"ntext", new SqlTypeInfo(typeof (string))},
-                {"xml", new SqlTypeInfo(typeof (string))},
-                {"bigint", new SqlTypeInfo(typeof (long), typeof (long?))},
-                {"uniqueidentifier", new SqlTypeInfo(typeof (Guid), typeof (Guid?))},
-                {"bit", new SqlTypeInfo(typeof (bool), typeof (bool?))},
-                {"binary", new SqlTypeInfo(typeof (byte[]))},
-                {"varbinary", new SqlTypeInfo(typeof (byte[]))},
-                {"image", new SqlTypeInfo(typeof (byte[]))},
-                {"decimal", new SqlTypeInfo(typeof (double), typeof (double?))},
-                {"date", dateTimeTypeInfo},
-                {"smalldatetime", dateTimeTypeInfo},
-                {"datetime", dateTimeTypeInfo},
-                {"datetime2", dateTimeTypeInfo},
-                {"datetimeoffset", dateTimeTypeInfo},
-                {"smallint", intTypeInfo},
-                {"tinyint", intTypeInfo},
-                {"timestamp", new SqlTypeInfo(typeof(ulong), typeof(ulong?))}
-            };
         }
     }
 }
