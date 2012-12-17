@@ -9,6 +9,11 @@ namespace PeteSake.SqlSchema
         public string Name;
         public TableType Type;
 
+        public string Id
+        {
+            get { return Schema + "." + Name; }
+        }
+
         public TableType SetType(string type)
         {
             switch (type)

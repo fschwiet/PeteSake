@@ -30,7 +30,7 @@ namespace PeteSake
 
         public override int Run(string[] remainingArguments)
         {
-            var results = SchemaReader.GetTables(connectionString);
+            var results = SchemaReader.GetTables(connectionString.ToString());
             Console.WriteLine("Tables: " + JsonConvert.SerializeObject(results, Formatting.Indented));
 
             return 0;
