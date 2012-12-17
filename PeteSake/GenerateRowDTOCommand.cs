@@ -44,30 +44,7 @@ namespace PeteSake
             return base.OverrideAfterHandlingArgumentsBeforeRun(remainingArguments);
         }
 
-        Dictionary<string, Type> typeMapping = new Dictionary<string, Type>()
-        {
-            {"int", typeof(int)},
-            {"varchar", typeof(string)},
-            {"nvarchar", typeof(string)},
-            {"text", typeof(string)},
-            {"ntext", typeof(string)},
-            {"xml", typeof(string)},
-            {"bigint", typeof(long)},
-            {"uniqueidentifier", typeof(Guid)},
-            {"bit", typeof(bool)},
-            {"binary", typeof(byte[])},
-            {"varbinary", typeof(byte[])},
-            {"image", typeof(byte[])},
-            {"decimal", typeof(double)},
-            {"date", typeof(DateTime)},
-            {"smalldatetime", typeof(DateTime)},
-            {"datetime", typeof(DateTime)},
-            {"datetime2", typeof(DateTime)},
-            {"datetimeoffset", typeof(TimeSpan)},
-            {"smallint", typeof(int)},
-            {"tinyint", typeof(int)},
-            {"timestamp", typeof(ulong)}
-        }; 
+        Dictionary<string, SqlTypeInfo> typeMapping = GetTypeMapping(); 
 
         public override int Run(string[] remainingArguments)
         {
@@ -92,12 +69,12 @@ namespace PeteSake
 
                     foreach (var column in table.Columns)
                     {
-                        Type type;
+                        SqlTypeInfo type;
 
                         if (!typeMapping.TryGetValue(column.Type, out type))
                             throw new Exception("Unable to convert SQL type to .NET type: " + column.Type);
 
-                        writer.WriteLine("         public {0} {1};", type.Name, column.Name);    
+                        writer.WriteLine("         public {0} {1};", column.IsNullable ? type.CsNullableType : type.CsType, column.Name);    
                     }
 
                     writer.WriteLine("    }");
@@ -106,6 +83,37 @@ namespace PeteSake
             }
 
             return 0;
+        }
+
+        private static Dictionary<string, SqlTypeInfo> GetTypeMapping()
+        {
+            var dateTimeTypeInfo = new SqlTypeInfo(typeof (DateTime), typeof (DateTime?));
+            var intTypeInfo = new SqlTypeInfo(typeof (int), typeof (int?));
+
+            return new Dictionary<string, SqlTypeInfo>()
+            {
+                {"int", intTypeInfo},
+                {"varchar", new SqlTypeInfo(typeof (string))},
+                {"nvarchar", new SqlTypeInfo(typeof (string))},
+                {"text", new SqlTypeInfo(typeof (string))},
+                {"ntext", new SqlTypeInfo(typeof (string))},
+                {"xml", new SqlTypeInfo(typeof (string))},
+                {"bigint", new SqlTypeInfo(typeof (long), typeof (long?))},
+                {"uniqueidentifier", new SqlTypeInfo(typeof (Guid), typeof (Guid?))},
+                {"bit", new SqlTypeInfo(typeof (bool), typeof (bool?))},
+                {"binary", new SqlTypeInfo(typeof (byte[]))},
+                {"varbinary", new SqlTypeInfo(typeof (byte[]))},
+                {"image", new SqlTypeInfo(typeof (byte[]))},
+                {"decimal", new SqlTypeInfo(typeof (double), typeof (double?))},
+                {"date", dateTimeTypeInfo},
+                {"smalldatetime", dateTimeTypeInfo},
+                {"datetime", dateTimeTypeInfo},
+                {"datetime2", dateTimeTypeInfo},
+                {"datetimeoffset", dateTimeTypeInfo},
+                {"smallint", intTypeInfo},
+                {"tinyint", intTypeInfo},
+                {"timestamp", new SqlTypeInfo(typeof(ulong), typeof(ulong?))}
+            };
         }
     }
 }
