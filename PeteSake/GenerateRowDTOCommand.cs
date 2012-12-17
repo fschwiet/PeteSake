@@ -28,6 +28,16 @@ namespace PeteSake
             this.HasOption("database=", "Name of SQL database", v => connectionString.InitialCatalog = v);
         }
 
+        public override int? OverrideAfterHandlingArgumentsBeforeRun(string[] remainingArguments)
+        {
+            if (string.IsNullOrEmpty(connectionString.InitialCatalog))
+            {
+                throw new ConsoleHelpAsException("A database/catalog must be specified in the connection string.");
+            }
+            
+            return base.OverrideAfterHandlingArgumentsBeforeRun(remainingArguments);
+        }
+
         public override int Run(string[] remainingArguments)
         {
             var results = SchemaReader.GetTables(connectionString.ToString());
