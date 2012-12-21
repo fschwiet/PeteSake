@@ -57,7 +57,7 @@ namespace PeteSake
 
                 var file = Path.Combine(Directory, className + ".cs");
 
-                using(var stream = new FileStream(file, FileMode.OpenOrCreate))
+                using(var stream = new FileStream(file, FileMode.Create))
                 using (var writer = new StreamWriter(stream, Encoding.UTF8))
                 {
                     writer.WriteLine("using System;");
@@ -74,7 +74,7 @@ namespace PeteSake
                         if (!typeMapping.TryGetValue(column.Type, out type))
                             throw new Exception("Unable to convert SQL type to .NET type: " + column.Type);
 
-                        writer.WriteLine("         public {0} {1};", column.IsNullable ? type.CsNullableType : type.CsType, column.Name);    
+                        writer.WriteLine("         public {0} {1};", type.GetTypeExpression(column.IsNullable), column.Name);    
                     }
 
                     writer.WriteLine("    }");

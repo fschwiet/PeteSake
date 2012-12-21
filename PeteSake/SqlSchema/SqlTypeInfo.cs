@@ -8,7 +8,7 @@ namespace PeteSake.SqlSchema
 {
     public class SqlTypeInfo
     {
-        public SqlTypeInfo(Type type, Type nullableType = null)
+        public SqlTypeInfo(Type type,Type nullableType = null)
         {
             CsType = type;
             CsNullableType = nullableType ?? type;
@@ -47,6 +47,20 @@ namespace PeteSake.SqlSchema
                     {"datetimeoffset", dateTimeTypeInfo},
                     {"timestamp", new SqlTypeInfo(typeof(ulong), typeof(ulong?))}
                 };
+        }
+
+        public string GetTypeExpression(bool isNullable)
+        {
+            var result = isNullable ? CsNullableType : CsType;
+
+            if (result.IsGenericType && result.Name.StartsWith("Nullable"))
+            {
+                return result.GenericTypeArguments[0].Name + "?";
+            }
+            else
+            {
+                return result.Name;
+            }
         }
     }
 }
