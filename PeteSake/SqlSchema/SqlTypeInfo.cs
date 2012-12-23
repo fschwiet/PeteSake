@@ -26,8 +26,8 @@ namespace PeteSake.SqlSchema
             return new Dictionary<string, SqlTypeInfo>()
                 {
                     {"int", intTypeInfo},
-                    {"smallint", intTypeInfo},
-                    {"tinyint", intTypeInfo},
+                    {"smallint", new SqlTypeInfo(typeof(short), typeof(short?))},
+                    {"tinyint", new SqlTypeInfo(typeof(byte), typeof(byte?))},
                     {"varchar", new SqlTypeInfo(typeof (string))},
                     {"nvarchar", new SqlTypeInfo(typeof (string))},
                     {"text", new SqlTypeInfo(typeof (string))},
@@ -39,13 +39,13 @@ namespace PeteSake.SqlSchema
                     {"binary", byteArrayTypeInfo},
                     {"varbinary", byteArrayTypeInfo},
                     {"image", byteArrayTypeInfo},
-                    {"decimal", new SqlTypeInfo(typeof (double), typeof (double?))},
+                    {"decimal", new SqlTypeInfo(typeof (decimal), typeof (decimal?))},
                     {"date", dateTimeTypeInfo},
                     {"smalldatetime", dateTimeTypeInfo},
                     {"datetime", dateTimeTypeInfo},
                     {"datetime2", dateTimeTypeInfo},
-                    {"datetimeoffset", dateTimeTypeInfo},
-                    {"timestamp", new SqlTypeInfo(typeof(ulong), typeof(ulong?))}
+                    {"datetimeoffset", new SqlTypeInfo(typeof(DateTimeOffset), typeof(DateTimeOffset?))},
+                    {"timestamp", byteArrayTypeInfo}
                 };
         }
 
