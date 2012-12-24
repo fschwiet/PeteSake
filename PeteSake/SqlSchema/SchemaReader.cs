@@ -16,20 +16,20 @@ namespace PeteSake.SqlSchema
             List<Table> results = new List<Table>();
             Dictionary<string,Table> tableById = new Dictionary<string, Table>();
 
-            VisitSchemaRows(connectionString, "Tables", source =>
+            VisitSchemaRows(connectionString, "Tables", (source,keys) =>
             {
-                var table1 = new Table();
+                var table = new Table();
 
-                table1.Catalog = (string)source("TABLE_CATALOG");
-                table1.Name = (string)source("TABLE_NAME");
-                table1.Schema = (string)source("TABLE_SCHEMA");
-                table1.Equals(source("TABLE_TYPE"));
+                table.Catalog = (string)source("TABLE_CATALOG");
+                table.Name = (string)source("TABLE_NAME");
+                table.Schema = (string)source("TABLE_SCHEMA");
+                table.Equals(source("TABLE_TYPE"));
 
-                results.Add(table1);
-                tableById[table1.Id] = table1;
+                results.Add(table);
+                tableById[table.Id] = table;
             });
 
-            VisitSchemaRows(connectionString, "Columns", source =>
+            VisitSchemaRows(connectionString, "Columns", (source,keys) =>
             {
                 var tableId = Table.GetDatabaseKey((string)source("TABLE_SCHEMA"),
                                                    (string)source("TABLE_NAME"));
@@ -44,10 +44,35 @@ namespace PeteSake.SqlSchema
                 table.Columns.Add(column);
             });
 
+            using (var connection = new SqlConnection(connectionString))
+            {
+                connection.Open();
+
+                foreach (var table in tableById.Values)
+                {
+                    using (var command = new SqlCommand("sp_pkeys", connection))
+                    {
+                        command.CommandType = CommandType.StoredProcedure;
+
+                        command.Parameters.Add(new SqlParameter("@table_name", table.Name));
+
+                        using (var reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                var columnName = reader.GetString(reader.GetOrdinal("COLUMN_NAME"));
+                                var indexPosition = reader.GetInt16(reader.GetOrdinal("KEY_SEQ"));
+                                table.Columns.Single(c => c.Name == columnName).PrimaryKeyPosition = indexPosition;
+                            }
+                        }
+                    }
+                }
+            }
+
             return results;
         }
 
-        private static void VisitSchemaRows(string connectionString, string schemaElement, Action<Func<string,object>> rowHandler)
+        private static void VisitSchemaRows(string connectionString, string schemaElement, Action<Func<string, object>, string[]> rowHandler)
         {
             using (var connection = new SqlConnection(connectionString))
             {
@@ -64,7 +89,7 @@ namespace PeteSake.SqlSchema
 
                 foreach (DataRow row in tables.Rows)
                 {
-                    rowHandler(key => row.ItemArray[columnIndex[key]]);
+                    rowHandler(key => row.ItemArray[columnIndex[key]], columnIndex.Keys.ToArray());
                 }
             }
         }

@@ -10,6 +10,7 @@ namespace PeteSake.SqlSchema
     {
         public string Name;
         public bool IsNullable;
+        public int? PrimaryKeyPosition;
         public string Type;
     }
 }

@@ -14,7 +14,7 @@ namespace PeteSake
 {
     public class GenerateRowDTOCommand : ConsoleCommand
     {
-        SqlConnectionStringBuilder connectionString = new SqlConnectionStringBuilder()
+        public SqlConnectionStringBuilder connectionString = new SqlConnectionStringBuilder()
         {
             DataSource = ".\\SQLEXPRESS",
             InitialCatalog = "",
@@ -49,7 +49,6 @@ namespace PeteSake
         public override int Run(string[] remainingArguments)
         {
             var results = SchemaReader.GetTables(connectionString.ToString());
-            Console.WriteLine("Tables: " + JsonConvert.SerializeObject(results, Formatting.Indented));
 
             foreach (var table in results)
             {
@@ -73,6 +72,11 @@ namespace PeteSake
 
                         if (!typeMapping.TryGetValue(column.Type, out type))
                             throw new Exception("Unable to convert SQL type to .NET type: " + column.Type);
+
+                        if (column.PrimaryKeyPosition.HasValue)
+                        {
+                            writer.WriteLine("         [PrimaryKeyPosition({0})]", column.PrimaryKeyPosition.Value);
+                        }
 
                         writer.WriteLine("         public {0} {1};", type.GetTypeExpression(column.IsNullable), column.Name);    
                     }
